@@ -1,3 +1,5 @@
+const IS_LIVE = !!import.meta.env.VITE_API_URL;
+ 
 export default function Controls({ sim, trafficOn, handlers }) {
   const allInst = sim.zones.flatMap(z => z.instances);
   const healthyCount = allInst.filter(i => i.status === 'healthy').length;
@@ -13,16 +15,18 @@ export default function Controls({ sim, trafficOn, handlers }) {
         <StatCard label="Total" value={allInst.length} color="#a1a1aa" />
       </div>
  
-      {/* Traffic */}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <Btn onClick={handlers.onToggleTraffic}
-          label={trafficOn ? '⏹ Stop' : '▶ Start Traffic'}
-          color={trafficOn ? '#f87171' : '#34d399'}
-          bg={trafficOn ? 'rgba(239,68,68,0.08)' : 'rgba(52,211,153,0.08)'}
-          border={trafficOn ? 'rgba(239,68,68,0.3)' : 'rgba(52,211,153,0.3)'}
-        />
-        <Btn onClick={handlers.onSendOne} label="→ 1 Req" color="#a1a1aa" bg="rgba(255,255,255,0.03)" border="rgba(255,255,255,0.1)" />
-      </div>
+      {/* Traffic — только в симуляции */}
+      {!IS_LIVE && (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Btn onClick={handlers.onToggleTraffic}
+            label={trafficOn ? '⏹ Stop' : '▶ Start Traffic'}
+            color={trafficOn ? '#f87171' : '#34d399'}
+            bg={trafficOn ? 'rgba(239,68,68,0.08)' : 'rgba(52,211,153,0.08)'}
+            border={trafficOn ? 'rgba(239,68,68,0.3)' : 'rgba(52,211,153,0.3)'}
+          />
+          <Btn onClick={handlers.onSendOne} label="→ 1 Req" color="#a1a1aa" bg="rgba(255,255,255,0.03)" border="rgba(255,255,255,0.1)" />
+        </div>
+      )}
  
       {/* Algo */}
       <Btn onClick={handlers.onToggleAlgo}
@@ -41,18 +45,27 @@ export default function Controls({ sim, trafficOn, handlers }) {
       {/* Danger */}
       <div style={{ borderTop: '1px solid #1a1a2e', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={{ fontSize: 9, letterSpacing: 2, color: '#3f3f46', textTransform: 'uppercase', fontFamily: 'monospace' }}>Danger Zone</span>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {sim.zones.map(z => (
-            <Btn key={z.id} onClick={() => z.alive && handlers.onKillZone(z.id)}
-              label={z.alive ? `☠ Kill ${z.id.toUpperCase()}` : `↓ ${z.id.toUpperCase()} Down`}
-              color={z.alive ? '#f87171' : '#52525b'}
-              bg={z.alive ? 'rgba(239,68,68,0.07)' : 'rgba(0,0,0,0.2)'}
-              border={z.alive ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.05)'}
-              flex={1} />
-          ))}
-        </div>
-        <Btn onClick={handlers.onAttack} label="🔥 Simulate Attack"
-          color="#fb923c" bg="rgba(251,146,60,0.08)" border="rgba(251,146,60,0.25)" />
+ 
+        {/* Kill Zone — только в симуляции */}
+        {!IS_LIVE && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            {sim.zones.map(z => (
+              <Btn key={z.id} onClick={() => z.alive && handlers.onKillZone(z.id)}
+                label={z.alive ? `☠ Kill ${z.id.toUpperCase()}` : `↓ ${z.id.toUpperCase()} Down`}
+                color={z.alive ? '#f87171' : '#52525b'}
+                bg={z.alive ? 'rgba(239,68,68,0.07)' : 'rgba(0,0,0,0.2)'}
+                border={z.alive ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.05)'}
+                flex={1} />
+            ))}
+          </div>
+        )}
+ 
+        {/* Simulate Attack — только в симуляции */}
+        {!IS_LIVE && (
+          <Btn onClick={handlers.onAttack} label="🔥 Simulate Attack"
+            color="#fb923c" bg="rgba(251,146,60,0.08)" border="rgba(251,146,60,0.25)" />
+        )}
+ 
         <Btn onClick={handlers.onReset} label="↺ Reset"
           color="#52525b" bg="transparent" border="rgba(255,255,255,0.06)" />
       </div>
