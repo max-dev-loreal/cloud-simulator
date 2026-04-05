@@ -31,3 +31,6 @@ infrastructure/terraform.tfstate
 infrastructure/terraform.tfstate.backup
 infrastructure/.terraform.tfvars
 *.tfvars
+
+.env
+.env.local
