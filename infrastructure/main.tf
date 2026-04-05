@@ -13,12 +13,12 @@ provider "aws" {
 resource "aws_iam_role" "lambda_role" {
  name = "${var.project_name}-lambda-role"
 
- assume_role_policy = jsondecode({
+ assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Principal = { service = "lambda.amazonaws.com"}
+        Principal = { Service = "lambda.amazonaws.com"}
     }]
  })
 }
@@ -30,7 +30,7 @@ resource "aws_iam_role_policy" "lambda_ec2_policy" {
   name = "${var.project_name}-ec2-policy"
   role = aws_iam_role.lambda_role.id
 
-  policy = jsondecode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
         {
